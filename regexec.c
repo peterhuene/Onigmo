@@ -1122,7 +1122,7 @@ static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
 #ifdef USE_CAPTURE_HISTORY
 static int
 make_capture_history_tree(OnigCaptureTreeNode* node, OnigStackType** kp,
-                          OnigStackType* stk_top, UChar* str, regex_t* reg)
+                          OnigStackType* stk_top, UChar* str, regex_t const* reg)
 {
   int n, r;
   OnigCaptureTreeNode* child;
@@ -1177,7 +1177,7 @@ static int mem_is_in_memp(int mem, int num, UChar* memp)
   return 0;
 }
 
-static int backref_match_at_nested_level(regex_t* reg
+static int backref_match_at_nested_level(regex_t const* reg
 	 , OnigStackType* top, OnigStackType* stk_base
 	 , int ignore_case, int case_fold_flag
 	 , int nest, int mem_num, UChar* memp, UChar** s, const UChar* send)
@@ -1326,7 +1326,7 @@ typedef struct {
 /* match data(str - end) from position (sstart). */
 /* if sstart == str then set sprev to NULL. */
 static OnigPosition
-match_at(regex_t* reg, const UChar* str, const UChar* end,
+match_at(regex_t const* reg, const UChar* str, const UChar* end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
 	 const UChar* right_range,
 #endif
@@ -3110,7 +3110,7 @@ slow_search_backward_ic(OnigEncoding enc, int case_fold_flag,
 #ifndef USE_SUNDAY_QUICK_SEARCH
 /* Boyer-Moore-Horspool search applied to a multibyte string */
 static UChar*
-bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_notrev(regex_t const* reg, const UChar* target, const UChar* target_end,
 		 const UChar* text, const UChar* text_end,
 		 const UChar* text_range)
 {
@@ -3167,7 +3167,7 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Boyer-Moore-Horspool search */
 static UChar*
-bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search(regex_t const* reg, const UChar* target, const UChar* target_end,
 	  const UChar* text, const UChar* text_end, const UChar* text_range)
 {
   const UChar *s, *t, *p, *end;
@@ -3215,7 +3215,7 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Boyer-Moore-Horspool search applied to a multibyte string (ignore case) */
 static UChar*
-bm_search_notrev_ic(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_notrev_ic(regex_t const* reg, const UChar* target, const UChar* target_end,
 		    const UChar* text, const UChar* text_end,
 		    const UChar* text_range)
 {
@@ -3270,7 +3270,7 @@ bm_search_notrev_ic(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Boyer-Moore-Horspool search (ignore case) */
 static UChar*
-bm_search_ic(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_ic(regex_t const* reg, const UChar* target, const UChar* target_end,
 	     const UChar* text, const UChar* text_end, const UChar* text_range)
 {
   const UChar *s, *p, *end;
@@ -3314,7 +3314,7 @@ bm_search_ic(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Sunday's quick search applied to a multibyte string */
 static UChar*
-bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_notrev(regex_t const* reg, const UChar* target, const UChar* target_end,
 		 const UChar* text, const UChar* text_end,
 		 const UChar* text_range)
 {
@@ -3375,7 +3375,7 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Sunday's quick search */
 static UChar*
-bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search(regex_t const* reg, const UChar* target, const UChar* target_end,
 	  const UChar* text, const UChar* text_end, const UChar* text_range)
 {
   const UChar *s, *t, *p, *end;
@@ -3418,7 +3418,7 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Sunday's quick search applied to a multibyte string (ignore case) */
 static UChar*
-bm_search_notrev_ic(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_notrev_ic(regex_t const* reg, const UChar* target, const UChar* target_end,
 		    const UChar* text, const UChar* text_end,
 		    const UChar* text_range)
 {
@@ -3476,7 +3476,7 @@ bm_search_notrev_ic(regex_t* reg, const UChar* target, const UChar* target_end,
 
 /* Sunday's quick search (ignore case) */
 static UChar*
-bm_search_ic(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_ic(regex_t const* reg, const UChar* target, const UChar* target_end,
 	     const UChar* text, const UChar* text_end, const UChar* text_range)
 {
   const UChar *s, *p, *end;
@@ -3523,7 +3523,7 @@ bm_search_ic(regex_t* reg, const UChar* target, const UChar* target_end,
 
 static int
 set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
-		     int** skip)
+		     int* const* skip)
 {
   int i, len;
 
@@ -3532,7 +3532,7 @@ set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
     if (IS_NULL(*skip)) return ONIGERR_MEMORY;
   }
 
-  len = (int )(end - s);
+  len = (int )(end - s); 
   for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
     (*skip)[i] = len;
 
@@ -3543,7 +3543,7 @@ set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 }
 
 static UChar*
-bm_search_backward(regex_t* reg, const UChar* target, const UChar* target_end,
+bm_search_backward(regex_t const* reg, const UChar* target, const UChar* target_end,
 		   const UChar* text, const UChar* adjust_text,
 		   const UChar* text_end, const UChar* text_start)
 {
@@ -3572,7 +3572,7 @@ bm_search_backward(regex_t* reg, const UChar* target, const UChar* target_end,
 }
 
 static UChar*
-map_search(OnigEncoding enc, UChar map[],
+map_search(OnigEncoding enc, UChar const map[],
 	   const UChar* text, const UChar* text_range)
 {
   const UChar *s = text;
@@ -3586,7 +3586,7 @@ map_search(OnigEncoding enc, UChar map[],
 }
 
 static UChar*
-map_search_backward(OnigEncoding enc, UChar map[],
+map_search_backward(OnigEncoding enc, UChar const map[],
 		    const UChar* text, const UChar* adjust_text,
 		    const UChar* text_start)
 {
@@ -3601,7 +3601,7 @@ map_search_backward(OnigEncoding enc, UChar map[],
 }
 
 extern OnigPosition
-onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, OnigRegion* region,
+onig_match(regex_t const* reg, const UChar* str, const UChar* end, const UChar* at, OnigRegion* region,
 	    OnigOptionType option)
 {
   ptrdiff_t r;
@@ -3666,7 +3666,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
 }
 
 static int
-forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
+forward_search_range(regex_t const* reg, const UChar* str, const UChar* end, UChar* s,
 		     UChar* range, UChar** low, UChar** high, UChar** low_prev)
 {
   UChar *p, *pprev = (UChar* )NULL;
@@ -3798,7 +3798,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 #define BM_BACKWARD_SEARCH_LENGTH_THRESHOLD   100
 
 static int
-backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
+backward_search_range(regex_t const* reg, const UChar* str, const UChar* end,
 		      UChar* s, const UChar* range, UChar* adjrange,
 		      UChar** low, UChar** high)
 {
@@ -3901,14 +3901,14 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
 
 extern OnigPosition
-onig_search(regex_t* reg, const UChar* str, const UChar* end,
+onig_search(regex_t const* reg, const UChar* str, const UChar* end,
 	    const UChar* start, const UChar* range, OnigRegion* region, OnigOptionType option)
 {
   return onig_search_gpos(reg, str, end, start, start, range, region, option);
 }
 
 extern OnigPosition
-onig_search_gpos(regex_t* reg, const UChar* str, const UChar* end,
+onig_search_gpos(regex_t const* reg, const UChar* str, const UChar* end,
 	    const UChar* global_pos,
 	    const UChar* start, const UChar* range, OnigRegion* region, OnigOptionType option)
 {
